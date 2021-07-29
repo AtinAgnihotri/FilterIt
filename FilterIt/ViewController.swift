@@ -12,18 +12,25 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
 
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var intensity: UISlider!
+    @IBOutlet var filterButton: UIButton!
+    @IBOutlet var scale: UISlider!
+    @IBOutlet var radius: UISlider!
+    @IBOutlet var scaleLabel: UILabel!
+    @IBOutlet var radiusLabel: UILabel!
+    @IBOutlet var intensityLabel: UILabel!
     
     var context: CIContext!
     var currentFilter: CIFilter!
     
     var currentImage: UIImage!
     
-    let filters = ["CIBumpDistortion", "CIGaussianBlur", "CIPixellate", "CISepiaTone", "CITwirlDistortion", "CIUnsharpMask", "CIVignette"]
+    let filters = ["CIBumpDistortion", "CIGaussianBlur", "CIPixellate", "CISepiaTone", "CITwirlDistortion", "CIUnsharpMask", "CIVignette", "CIPointillize", "CIBloom"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupCoreImage()
+        
     }
     
     func setupNavigationBar() {
@@ -35,6 +42,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func setupCoreImage() {
         context = CIContext()
         currentFilter = CIFilter(name: "CISepiaTone")
+        filterButton.setTitle("CISepiaTone", for: .normal)
+        setSlidersStateForSelectedFilter()
     }
     
     
@@ -85,19 +94,19 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func applyProcessing() {
         let inputKeys = currentFilter.inputKeys
-        print(currentFilter)
-        print(inputKeys)
+//        print(currentFilter)
+//        print(inputKeys)
         
         if inputKeys.contains(kCIInputIntensityKey) {
             currentFilter.setValue(intensity.value, forKey: kCIInputIntensityKey)
         }
         
         if inputKeys.contains(kCIInputRadiusKey) {
-            currentFilter.setValue(intensity.value * 200, forKey: kCIInputRadiusKey)
+            currentFilter.setValue(radius.value * 200, forKey: kCIInputRadiusKey)
         }
         
         if inputKeys.contains(kCIInputScaleKey) {
-            currentFilter.setValue(intensity.value * 10, forKey: kCIInputScaleKey)
+            currentFilter.setValue(scale.value * 10, forKey: kCIInputScaleKey)
         }
         
         if inputKeys.contains(kCIInputCenterKey) {
@@ -136,20 +145,59 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         guard let filter = action.title else { return }
         currentFilter = CIFilter(name: filter)
         setupForProcessing()
-//        let beginImage = CIImage(image: currentImage)
-//        currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
-//        applyProcessing()
-//        setupForProcessing()
+        setSlidersStateForSelectedFilter()
+        filterButton.setTitle("\(filter)", for: .normal)
         print(filter)
     }
     
-    @IBAction func save(_ sender: UIButton) {
+    func setSlidersStateForSelectedFilter(){
+        let inputKeys = currentFilter.inputKeys
         
+        showInputSlider(inputKeys.contains(kCIInputScaleKey), for: scale, with: scaleLabel)
+        showInputSlider(inputKeys.contains(kCIInputRadiusKey), for: radius, with: radiusLabel)
+        showInputSlider(inputKeys.contains(kCIInputIntensityKey), for: intensity, with: intensityLabel)
     }
     
-    @IBAction func intensityChanged(_ sender: UISlider) {
+    func showInputSlider(_ show: Bool, for slider: UISlider, with label: UILabel) {
+        slider.isHidden = !show
+        label.isHidden = !show
+    }
+    
+    @IBAction func save(_ sender: UIButton) {
+        guard let image = imageView.image else {
+            showAlert(title: "No Image Selected", message: "Please select/click an image to edit/save")
+            return
+        }
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_: didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        let title: String
+        let message: String
+        if let error = error {
+            title = "Saved Error"
+            message = error.localizedDescription
+        } else {
+            title = "Saved"
+            message = "This image has been successfully saved to your Photo Library"
+        }
+//        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        ac.addAction(UIAlertAction(title: "OK", style: .default))
+//        present(ac, animated: true)
+        showAlert(title: title, message: message)
+    }
+    
+    @IBAction func sliderMoved(_ sender: UISlider) {
         applyProcessing()
     }
+    
+    func showAlert(title: String, message: String? = nil) {
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+    
+    
     
 }
 
