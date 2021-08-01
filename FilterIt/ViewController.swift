@@ -18,6 +18,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet var scaleLabel: UILabel!
     @IBOutlet var radiusLabel: UILabel!
     @IBOutlet var intensityLabel: UILabel!
+    @IBOutlet var imageContainerView: UIView!
     
     var context: CIContext!
     var currentFilter: CIFilter!
@@ -79,8 +80,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.editedImage] as? UIImage else { return }
+        imageView.alpha = 0
         dismiss(animated: true)
+        
         currentImage = image
+        print("S : \(Date())")
         
         setupForProcessing()
     }
@@ -88,7 +92,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func setupForProcessing() {
         let beginImage = CIImage(image: currentImage)
         currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
+        
         applyProcessing()
+        
+        UIView.animate(withDuration: 1 , delay: 0, options: [.layoutSubviews], animations: {
+            self.imageView.alpha = 1
+//            self.imageView.layoutIfNeeded()
+        }) { fin in
+            print("F : \(Date())")
+        }
     }
 
     

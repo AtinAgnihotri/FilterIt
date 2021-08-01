@@ -126,6 +126,7 @@
                     <navigationItem key="navigationItem" id="uQe-oq-ihc"/>
                     <connections>
                         <outlet property="filterButton" destination="s9s-X1-pp9" id="jEL-SM-IJI"/>
+                        <outlet property="imageContainerView" destination="HGd-PT-iqJ" id="NxI-ve-08u"/>
                         <outlet property="imageView" destination="7Km-ay-mhj" id="9kj-9m-wMS"/>
                         <outlet property="intensity" destination="gpb-TS-1Yc" id="eGV-Ug-MzP"/>
                         <outlet property="intensityLabel" destination="o0Z-Ls-z70" id="B6D-sy-4BO"/>
