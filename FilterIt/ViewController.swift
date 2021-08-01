@@ -81,12 +81,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.editedImage] as? UIImage else { return }
         imageView.alpha = 0
-        dismiss(animated: true)
-        
-        currentImage = image
-        print("S : \(Date())")
-        
-        setupForProcessing()
+        print("Reached Here")
+        dismiss(animated: true) { [weak self] in
+            self?.currentImage = image
+            self?.setupForProcessing()
+        }
     }
     
     func setupForProcessing() {
@@ -95,6 +94,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         applyProcessing()
         
+//        imageView.alpha = 0
+        print("S : \(Date())")
         UIView.animate(withDuration: 1 , delay: 0, options: [.layoutSubviews], animations: {
             self.imageView.alpha = 1
 //            self.imageView.layoutIfNeeded()
