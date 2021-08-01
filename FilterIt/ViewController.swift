@@ -31,7 +31,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.viewDidLoad()
         setupNavigationBar()
         setupCoreImage()
-        
     }
     
     func setupNavigationBar() {
@@ -94,21 +93,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         applyProcessing()
         
-//        imageView.alpha = 0
-        print("S : \(Date())")
         UIView.animate(withDuration: 1 , delay: 0, options: [.layoutSubviews], animations: {
             self.imageView.alpha = 1
-//            self.imageView.layoutIfNeeded()
-        }) { fin in
-            print("F : \(Date())")
-        }
+        })
     }
 
     
     func applyProcessing() {
         let inputKeys = currentFilter.inputKeys
-//        print(currentFilter)
-//        print(inputKeys)
         
         if inputKeys.contains(kCIInputIntensityKey) {
             currentFilter.setValue(intensity.value, forKey: kCIInputIntensityKey)
@@ -194,9 +186,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             title = "Saved"
             message = "This image has been successfully saved to your Photo Library"
         }
-//        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//        ac.addAction(UIAlertAction(title: "OK", style: .default))
-//        present(ac, animated: true)
+
         showAlert(title: title, message: message)
     }
     
